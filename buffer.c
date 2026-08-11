@@ -30,9 +30,3 @@ void    read_from_input(InputBuffer* input_buffer)
 	input_buffer->input_size = bytes_read - 1;
 	input_buffer->buffer[bytes_read - 1] = 0;
 }
-
-// void	free_input_buffer(InputBuffer* input_buffer)
-// {
-// 	free(input_buffer->buffer);
-// 	free(input_buffer);
-// }

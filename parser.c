@@ -30,29 +30,11 @@ void	assign_token_type(Token* token)
 		token->token_type = TOKEN_BRACKET_CLOSE;
 	else if (strncmp(token->token, ",", token->token_size) == 0)
 		token->token_type = TOKEN_COMMA;
+	else if (is_str_num(token->token, token->token_size) == true)
+		token->token_type = TOKEN_NUM;
 	else
 		token->token_type = TOKEN_IDENTIFIER;
 }
-
-// Token*	tokens_builder(InputBuffer* input_buffer)
-// {
-// 	char*	word = strtok(input_buffer->buffer, DELIM);
-// 	Token*	token = NULL;
-// 	Token*	root = NULL;
-
-// 	while (word) {
-// 		token = create_token(word);
-// 		if (!token || !token->token) {
-// 			fprintf(stderr, "failed to create token sequence !\n");
-// 			exit(EXIT_FAILURE);
-// 		}
-// 		assign_token_type(token);
-// 		append_token(&root, token);
-// 		word = strtok(NULL, DELIM);
-// 	}
-// 	printf("done building tokens\n");
-// 	return (root);
-// }
 
 Token*	tokens_builder(InputBuffer* input_buffer)
 {

@@ -74,13 +74,17 @@ typedef struct Token {
 // buffer operations:
 InputBuffer*	create_input_buffer();
 void			read_from_input(InputBuffer* input_buffer);
-// parser funcs:
+// parser operations:
 void			branch_to_coammand(Token* root);
 Token*			tokens_builder(InputBuffer* input_buffer);
 void			assign_token_type(Token* token);
-// token operations
+// token operations:
 Token*			create_token(char* value);
 void			debug_token(Token* token_seq);
 void			append_token(Token** root_addr, Token* token);
+// helper operations:
+char*			lower_string(char* str);
+bool			is_str_num(char *str, size_t str_size);
+
 
 #endif

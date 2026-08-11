@@ -2,16 +2,6 @@
 
 //token operations
 
-char*	lower_string(char* value)
-{
-	int size = strlen(value);
-	for (int i = 0; i < size; ++i)
-		value[i] = tolower(value[i]);
-	return (value);
-}
-
-// tokenization rules:
-
 Token* create_token(char* value)
 {
 	Token* token = (Token*)gb_malloc(sizeof(Token), 0);
