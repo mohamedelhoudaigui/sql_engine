@@ -45,35 +45,40 @@ Token*	prepare_and_assign_token(char* buffer_line, int start_idx, int len)
 }
 
 
-Token*	tokens_builder(InputBuffer* input_buffer)
+Token* tokens_builder(InputBuffer* input_buffer)
 {
 	char*	buffer_line = input_buffer->buffer;
 	Token*	root = NULL;
 
 	size_t i = 0;
-	for (;i < input_buffer->buffer_size; ++i)
+	while (i < input_buffer->input_size)
 	{
 		// skip spaces
-		if (is_space_or_tab(buffer_line[i]) == false)
-		{
-			Token* token = NULL;
-
-			int start_idx = i;
-			int end_idx = i;
-
-			while (i < input_buffer->buffer_size && isalnum((unsigned char)buffer_line[i]) != 0)
-				++i;
-
-			end_idx = i;
-
-			if (end_idx == start_idx) {
-				// unrecognized char - consume it as a 1-char token (or skip it) so we always progress
-				token = prepare_and_assign_token(buffer_line, i, 1);
-			} else {
-				token = prepare_and_assign_token(buffer_line, start_idx, end_idx - start_idx);
-			}
-			append_token(&root, token);
+		if (is_space_or_tab(buffer_line[i])) {
+			++i;
+			continue;
 		}
+
+		Token* token = NULL;
+		int start_idx = i;
+
+		if (isalnum((unsigned char)buffer_line[i])) {
+			while (i < input_buffer->input_size && isalnum(buffer_line[i]))
+				++i;
+			token = prepare_and_assign_token(buffer_line, start_idx, i - start_idx);
+		} else if (is_special_token(buffer_line[i])) {
+			// special / unrecognized single-char token
+			token = prepare_and_assign_token(buffer_line, start_idx, 1);
+			++i;
+		}
+		// error in non recon character
+		else
+		{
+			fprintf(stderr, "unknown character %c\n", buffer_line[i]);
+			return (NULL);
+		}
+
+		append_token(&root, token);
 	}
 	printf("done building tokens\n");
 	return (root);

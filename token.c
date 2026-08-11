@@ -42,6 +42,8 @@ void	append_token(Token** root_addr, Token* token)
 
 void	debug_token(Token* token_seq)
 {
+	if (!token_seq)
+		return ;
 	printf("--------------------------\n");
 	while (token_seq) {
 		printf("token_value: \"%s\" | token_size: %zu | token_type: %u\n",
