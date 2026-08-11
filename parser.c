@@ -36,35 +36,44 @@ void	assign_token_type(Token* token)
 		token->token_type = TOKEN_IDENTIFIER;
 }
 
+Token*	prepare_and_assign_token(char* buffer_line, int start_idx, int len)
+{
+	Token* token = NULL;
+	token = create_token(strndup(buffer_line + start_idx, len));
+	assign_token_type(token);
+	return (token);
+}
+
+
 Token*	tokens_builder(InputBuffer* input_buffer)
 {
 	char*	buffer_line = input_buffer->buffer;
-	Token*	token = NULL;
 	Token*	root = NULL;
 
-	int start_idx = -1;
-	int end_indx = -1;
-
 	size_t i = 0;
-	while (i < input_buffer->buffer_size)
+	for (;i < input_buffer->buffer_size; ++i)
 	{
-		if (isalnum(buffer_line[i]) == 0) {
-			++i;
-		}
-
-		if (isalnum(buffer_line[i]) != 0)
+		// skip spaces
+		if (is_space_or_tab(buffer_line[i]) == false)
 		{
-			start_idx = i;
-			while (isalnum(buffer_line[i]) != 0 && i < input_buffer->buffer_size)
+			Token* token = NULL;
+
+			int start_idx = i;
+			int end_idx = i;
+
+			while (i < input_buffer->buffer_size && isalnum((unsigned char)buffer_line[i]) != 0)
 				++i;
-			end_indx = i;
-			int len = end_indx - start_idx;
-			token = create_token(strndup(buffer_line + start_idx, len));
-			assign_token_type(token);
+
+			end_idx = i;
+
+			if (end_idx == start_idx) {
+				// unrecognized char - consume it as a 1-char token (or skip it) so we always progress
+				token = prepare_and_assign_token(buffer_line, i, 1);
+			} else {
+				token = prepare_and_assign_token(buffer_line, start_idx, end_idx - start_idx);
+			}
 			append_token(&root, token);
 		}
-		else
-			++i;
 	}
 	printf("done building tokens\n");
 	return (root);

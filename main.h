@@ -82,9 +82,12 @@ void			assign_token_type(Token* token);
 Token*			create_token(char* value);
 void			debug_token(Token* token_seq);
 void			append_token(Token** root_addr, Token* token);
+Token*			prepare_and_assign_token(char* buffer_line, int start_idx, int len);
 // helper operations:
 char*			lower_string(char* str);
 bool			is_str_num(char *str, size_t str_size);
+bool			is_space_or_tab(char c);
+bool			is_special_token(char c);
 
 
 #endif
