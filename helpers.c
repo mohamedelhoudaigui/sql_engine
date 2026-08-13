@@ -28,3 +28,13 @@ bool	is_special_token(char c)
 {
 	return (c == ',' || c == '(' || c == ')' || c == '=');
 }
+
+
+void	graceful_crash(char* msg)
+{
+	fprintf(stderr, "Fatal error");
+	if (msg)
+		fprintf(stderr, " : %s\n", msg);
+	gb_malloc(0, 1);
+	exit(EXIT_FAILURE);
+}

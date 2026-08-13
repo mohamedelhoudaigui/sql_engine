@@ -10,6 +10,7 @@ void	_exit_c()
 
 void	branch_to_coammand(Token* root)
 {
+	
 	if (strncmp(root->token, EXIT_C, root->token_size) == 0)
 	{
 		_exit_c();

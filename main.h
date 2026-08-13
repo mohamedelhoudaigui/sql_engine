@@ -1,16 +1,5 @@
 #ifndef MAIN
 # define MAIN
-// supported operations in sql:
-// select
-// update
-// delete
-// insert
-
-// supported operations in meta commands:
-//.exit
-
-
-// basic CRUCD options for now
 
 #include <unistd.h>
 #include <stdio.h>
@@ -27,24 +16,15 @@
 #define MINIMUM_BUFFER_SIZE 128
 #define EXIT_C ".exit"
 
-// static const char* vocab[] = {
-// 	"select",
-// 	"update",
-// 	"delete",
-// 	"insert",
-// 	"from",
-// 	"into",
-// 	"set",
-// };
 
 typedef enum TokenTypes {
 	TOKEN_SELECT,
-	TOKEN_FROM,
 	TOKEN_INSERT,
-	TOKEN_INTO,
-	TOKEN_VALUES,
 	TOKEN_UPDATE,
 	TOKEN_DELETE,
+	TOKEN_FROM,
+	TOKEN_INTO,
+	TOKEN_VALUES,
 	TOKEN_SET,
 	TOKEN_WHERE,
 	TOKEN_BRACKET_OPEN,
@@ -71,6 +51,12 @@ typedef struct Token {
 
 }	Token;
 
+typedef struct select_s {
+	Token*	column_names;
+	Token*	table_name;
+
+}	select_t;
+
 // buffer operations:
 InputBuffer*	create_input_buffer();
 void			read_from_input(InputBuffer* input_buffer);
@@ -88,6 +74,10 @@ char*			lower_string(char* str);
 bool			is_str_num(char *str, size_t str_size);
 bool			is_space_or_tab(char c);
 bool			is_special_token(char c);
+void			graceful_crash(char* msg);
+// syntax / parser operations:
+void			syntax_analyses(Token* root);
+void			parse(Token* root);
 
 
 #endif

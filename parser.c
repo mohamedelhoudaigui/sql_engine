@@ -1,85 +1,87 @@
 #include "main.h"
 
-// parsing operations
+// parser operations
 
-void	assign_token_type(Token* token)
+void	_check_for_comma_sep(Token* root)
 {
-	if (strncmp(token->token, "select", token->token_size) == 0)
-		token->token_type = TOKEN_SELECT;
-	else if (strncmp(token->token, "from", token->token_size) == 0)
-		token->token_type = TOKEN_FROM;
-	else if (strncmp(token->token, "insert", token->token_size) == 0)
-		token->token_type = TOKEN_INSERT;
-	else if (strncmp(token->token, "into", token->token_size) == 0)
-		token->token_type = TOKEN_INTO;
-	else if (strncmp(token->token, "values", token->token_size) == 0)
-		token->token_type = TOKEN_VALUES;
-	else if (strncmp(token->token, "update", token->token_size) == 0)
-		token->token_type = TOKEN_UPDATE;
-	else if (strncmp(token->token, "delete", token->token_size) == 0)
-		token->token_type = TOKEN_DELETE;
-	else if (strncmp(token->token, "set", token->token_size) == 0)
-		token->token_type = TOKEN_SET;
-	else if (strncmp(token->token, "where", token->token_size) == 0)
-		token->token_type = TOKEN_WHERE;
-	else if (strncmp(token->token, "=", token->token_size) == 0)
-		token->token_type = TOKEN_EQUAL;
-	else if (strncmp(token->token, "(", token->token_size) == 0)
-		token->token_type = TOKEN_BRACKET_OPEN;
-	else if (strncmp(token->token, ")", token->token_size) == 0)
-		token->token_type = TOKEN_BRACKET_CLOSE;
-	else if (strncmp(token->token, ",", token->token_size) == 0)
-		token->token_type = TOKEN_COMMA;
-	else if (is_str_num(token->token, token->token_size) == true)
-		token->token_type = TOKEN_NUM;
-	else
-		token->token_type = TOKEN_IDENTIFIER;
-}
+	bool comma = false;
 
-Token*	prepare_and_assign_token(char* buffer_line, int start_idx, int len)
-{
-	Token* token = NULL;
-	token = create_token(strndup(buffer_line + start_idx, len));
-	assign_token_type(token);
-	return (token);
-}
-
-
-Token* tokens_builder(InputBuffer* input_buffer)
-{
-	char*	buffer_line = input_buffer->buffer;
-	Token*	root = NULL;
-
-	size_t i = 0;
-	while (i < input_buffer->input_size)
-	{
-		// skip spaces
-		if (is_space_or_tab(buffer_line[i])) {
-			++i;
-			continue;
+	while (root) {
+		if ((comma == false && root->token_type == TOKEN_COMMA) ||
+			(comma == true && root->token_type != TOKEN_COMMA)) {
+				graceful_crash("syntax error in select statement");
 		}
-
-		Token* token = NULL;
-		int start_idx = i;
-
-		if (isalnum((unsigned char)buffer_line[i])) {
-			while (i < input_buffer->input_size && isalnum(buffer_line[i]))
-				++i;
-			token = prepare_and_assign_token(buffer_line, start_idx, i - start_idx);
-		} else if (is_special_token(buffer_line[i])) {
-			// special / unrecognized single-char token
-			token = prepare_and_assign_token(buffer_line, start_idx, 1);
-			++i;
-		}
-		// error in non recon character
-		else
-		{
-			fprintf(stderr, "unknown character %c\n", buffer_line[i]);
-			return (NULL);
-		}
-
-		append_token(&root, token);
+		comma = !comma;
+		root = root->next;
 	}
-	printf("done building tokens\n");
-	return (root);
+}
+
+void	_parse_select(Token* root)
+{
+	_check_for_comma_sep(root);
+}
+
+void	_parse_insert(Token* root)
+{
+	// checking into token
+	if (root->token_type != TOKEN_INTO)
+		graceful_crash("syntax error in insert statement, \'into\' is missing");
+
+	root = root->next;
+
+	if (!root || root->token_type != TOKEN_VALUES)
+		graceful_crash("syntax error in insert statement, \'values\' is missing");
+
+	root = root->next;
+
+	if (!root || root->token_type != TOKEN_BRACKET_OPEN)
+		graceful_crash("syntax error in insert statement, \')\' is missing");
+
+	root = root->next;
+
+	if (!root || root->token_type != TOKEN_BRACKET_OPEN)
+		graceful_crash("syntax error in insert statement, \')\' is missing");
+
+	root = root->next
+}
+
+void	_parse_update(Token* root)
+{
+
+}
+
+void	_parse_delete(Token* root)
+{
+
+}
+
+// check for syntax error
+void	syntax_analyses(Token* root)
+{
+	Token* keyword = root;
+
+	// enums are numbered
+	if (keyword->token_type > TOKEN_DELETE)
+		return graceful_crash("first token is not a keyword");
+
+	// select syntax check
+	switch (keyword->token_type)
+	{
+		case TOKEN_SELECT:
+			_parse_select(root);
+		case TOKEN_INSERT:
+			_parse_insert(root);
+		case TOKEN_UPDATE:
+			_parse_update(root);
+		case TOKEN_DELETE:
+			_parse_delete(root);
+		default:
+			;
+	}
+
+}
+
+void	parse(Token* root)
+{
+	syntax_analyses(root);
 }
